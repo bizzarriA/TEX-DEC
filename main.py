@@ -7,6 +7,7 @@ import argparse
 import os
 import torch
 import pandas as pd
+from torchvision import transforms
 
 import wandb
 
@@ -60,9 +61,13 @@ def main():
         print("--name not valid")
         exit()
     if arg.DEC:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            torch.nn.Flatten(0)
+        ])
         alpha, beta, omega = 1, 1, 1
         ## TODO: implement merge test and val dataset CICIDS2017
-        tr_ds, val_ds, ood_ds = load_dataset(arg.name, arg.bs, num_worker=arg.worker, target_classes=normal_classes)
+        tr_ds, val_ds, ood_ds = load_dataset(arg.name, arg.bs, transform=transform, num_worker=arg.worker, target_classes=normal_classes)
         print("N sample of training dataset:", len(tr_ds.dataset))
         print("N sample of validation dataset:", len(val_ds.dataset))
         if arg.wandb:
