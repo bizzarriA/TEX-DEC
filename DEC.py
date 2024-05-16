@@ -88,7 +88,7 @@ class DEC:
                 x = x.to(self.device)
                 labels = labels.to(self.device)
                 y = torch.tensor([0 if y == self.label_name else 1 for y in labels])
-                q, pred = model(x)
+                q = model(x)
 
                 # kl divergence
                 loss_kld = alpha * loss_fn_kld(q.log(), get_p(q))
@@ -102,7 +102,7 @@ class DEC:
 
                 # classification loss
                 y = nn.functional.one_hot(y, num_classes=num_clusters).float().to(self.device)
-                loss_cls = omega * torch.nn.functional.cross_entropy(y, pred)
+                loss_cls = omega * torch.nn.functional.cross_entropy(y, q)
 
                 # total loss
                 batch_loss = loss_kld + loss_cluster + loss_cls

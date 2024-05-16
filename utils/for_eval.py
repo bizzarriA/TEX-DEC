@@ -13,13 +13,13 @@ def accuracy(model, ds, device, OOD_ds=None):
         for x, y, _ in ds:
             x = x.to(device)
             truth.append(y)
-            _, pred = model(x)
+            pred = model(x)
             pred_cluster.append(pred.max(1)[1].cpu())
         if OOD_ds:
             for x, y, _ in OOD_ds:
                 x = x.to(device)
                 truth.append(torch.full(y.shape, 2))
-                _, pred = model(x)
+                pred = model(x)
                 pred_cluster.append(pred.max(1)[1].cpu())
     y_pred = [0 if p < 0.5 else 1 for p in torch.cat(pred_cluster)]
     confusion_m = confusion_matrix(torch.cat(truth).numpy(), torch.cat(pred_cluster).numpy())
